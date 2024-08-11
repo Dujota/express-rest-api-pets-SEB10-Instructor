@@ -46,4 +46,50 @@ router.get('/:petId', async (req, res, next) => {
     }
   }
 });
+
+router.delete('/:petId', async (req, res, next) => {
+  try {
+    const pet = await Pet.findByIdAndDelete(req.params.petId);
+
+    if (!pet) {
+      res.status(404);
+      throw new Error('Pet not found');
+    }
+
+    // send the object back
+    // res.status(200).json(pet);
+
+    // send a custom response with a status
+    // res.status(200).json({ id: pet._id, status: 'deleted' });
+
+    // Standard delete response as per JSON API Specs
+    res.status(204).json({});
+  } catch (error) {
+    if (res.statusCode === 404) {
+      res.json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'oops something went wrong' });
+    }
+  }
+});
+
+router.put('/:petId', async (req, res, next) => {
+  try {
+    const pet = await Pet.findByIdAndUpdate(req.params.petId, req.body, { new: true });
+
+    if (!pet) {
+      res.status(404);
+      throw new Error('Pet not found');
+    }
+
+    res.status(200).json(pet);
+  } catch (error) {
+    if (res.statusCode === 404) {
+      res.json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'oops something went wrong' });
+    }
+  }
+});
+
 module.exports = router;
