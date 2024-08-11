@@ -29,6 +29,21 @@ router.get('/', async (req, res, next) => {
 });
 
 router.get('/:petId', async (req, res, next) => {
-  res.json({ hello: req.params.petId });
+  try {
+    const pet = await Pet.findById(req.params.petId);
+
+    if (!pet) {
+      res.status(404);
+      throw new Error('Pet not found');
+    }
+
+    res.status(200).json(pet);
+  } catch (error) {
+    if (res.statusCode === 404) {
+      res.json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'oops something went wrong' });
+    }
+  }
 });
 module.exports = router;
